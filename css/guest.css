@@ -12,11 +12,7 @@ html {
 }
 
 .font-esthetic {
-    font-family: 'Sacramento', cursive !important;
-}
-
-.font-arabic {
-    font-family: 'Noto Naskh Arabic', serif !important;
+    font-family: Georgia, serif;
 }
 
 .img-center-crop {
