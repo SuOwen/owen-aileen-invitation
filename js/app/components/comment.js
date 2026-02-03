@@ -7,7 +7,10 @@ import { dto } from '../../connection/dto.js';
 import { lang } from '../../common/language.js';
 import { storage } from '../../common/storage.js';
 import { session } from '../../common/session.js';
-import { request, HTTP_GET, HTTP_POST, HTTP_DELETE, HTTP_PUT, HTTP_STATUS_CREATED } from '../../connection/request.js';
+import { request, HTTP_GET, HTTP_POST, HTTP_DELETE, HTTP_PUT, HTTP_STATUS_CREATED, HTTP_PATCH } from '../../connection/request.js';
+
+const SUPABASE_URL = "https://vafatgxsnanrtibqlfkn.supabase.co/rest/v1";
+const SUPABASE_ANON_KEY = "sb_publishable_oWYxT-_RPe6U19hyqVnhLA_5Q9s2FJy";
 
 export const comment = (() => {
 
@@ -415,12 +418,65 @@ export const comment = (() => {
         badge.classList.toggle('text-success', isPresent);
     };
 
+    const loadWishes = async () => {
+        const wishesURL = `${SUPABASE_URL}/guest_list?select=name,message&message_created_at=not.eq.0&order=message_created_at.desc`;
+
+        console.log
+      
+        const response = await fetch(wishesURL, {
+          method: "GET",
+          headers: {
+            "apikey": SUPABASE_ANON_KEY,
+            "Authorization": `Bearer ${SUPABASE_ANON_KEY}`,
+            "Content-Type": "application/json"
+          }
+        });
+      
+        const data = await response.json();
+        console.log("Wishes:", data); // View supabase data
+      
+        renderWishes(data);
+    };
+    
+    const renderWishes = (list) => {
+        const container = document.getElementById("wish-list");
+        container.innerHTML = "";
+        
+        list.forEach(wish => {
+            const box = `
+            <div class="wish-item">
+                <h5 class="mb-1" style="font-size: 0.9rem; font-style: italic;">${wish.name}</h5>
+                <p class="mb-0" style="font-size: 1.05rem;">${wish.message}</p>
+            </div>
+            `;
+        
+            container.insertAdjacentHTML("beforeend", box);
+        });
+    };
+
+    const getGuestName = () => {
+        const params = new URLSearchParams(window.location.search);
+        // Assuming the guest name is passed via ?to=GuestName
+        return params.get("to")
+            ? decodeURIComponent(params.get("to")).trim()
+            : "Unknown Guest";
+    };
+
+    // Function to safely extract the UUID/token from the URL query parameter 'uuid'
+    const getGuestUuid = () => {
+        const params = new URLSearchParams(window.location.search);
+        // Assuming the UUID is passed via &uuid=YOUR_TOKEN
+        return params.get("t")
+            ? decodeURIComponent(params.get("t")).trim()
+            : null;
+    };
+
     /**
      * @param {HTMLButtonElement} button 
      * @returns {Promise<void>}
      */
     const send = async (button) => {
-        const id = button.getAttribute('data-uuid');
+        // const id = button.getAttribute('data-uuid');
 
         const name = document.getElementById('form-name');
         const nameValue = name.value;
@@ -428,154 +484,256 @@ export const comment = (() => {
         if (nameValue.length === 0) {
             util.notify('Name cannot be empty.').warning();
 
-            if (id) {
-                // scroll to form.
-                name.scrollIntoView({ block: 'center' });
-            }
+            // if (id) {
+            //     // scroll to form.
+            //     name.scrollIntoView({ block: 'center' });
+            // }
             return;
         }
 
+        // const presence = document.getElementById('form-presence');
+        // if (!id && presence && presence.value === '0') {
+        //     util.notify('Please select your attendance status.').warning();
+        //     return;
+        // }
+
         const presence = document.getElementById('form-presence');
-        if (!id && presence && presence.value === '0') {
+        if (presence && presence.value === '0') {
             util.notify('Please select your attendance status.').warning();
             return;
         }
 
-        const gifIsOpen = gif.isOpen(id ? id : gif.default);
-        const gifId = gif.getResultId(id ? id : gif.default);
-        const gifCancel = gif.buttonCancel(id);
-
-        if (gifIsOpen && !gifId) {
-            util.notify('Gif cannot be empty.').warning();
+        const totalPax = document.getElementById('form-total-pax');
+        if (totalPax && totalPax.value === '0' && presence.value !== "Berhalangan") {
+            util.notify('Please select the number of pax.').warning();
             return;
         }
 
-        if (gifIsOpen && gifId) {
-            gifCancel.hide();
-        }
+        const message = document.getElementById('form-comment');
 
-        const form = document.getElementById(`form-${id ? `inner-${id}` : 'comment'}`);
-        if (!gifIsOpen && form.value?.trim().length === 0) {
-            util.notify('Comments cannot be empty.').warning();
-            return;
-        }
+        // const gifIsOpen = gif.isOpen(id ? id : gif.default);
+        // const gifId = gif.getResultId(id ? id : gif.default);
+        // const gifCancel = gif.buttonCancel(id);
 
-        if (!id && name && !session.isAdmin()) {
-            name.disabled = true;
-        }
+        // if (gifIsOpen && !gifId) {
+        //     util.notify('Gif cannot be empty.').warning();
+        //     return;
+        // }
 
-        if (!session.isAdmin() && presence && presence.value !== '0') {
-            presence.disabled = true;
-        }
+        // if (gifIsOpen && gifId) {
+        //     gifCancel.hide();
+        // }
 
-        if (form) {
-            form.disabled = true;
-        }
+        // const form = document.getElementById(`form-${id ? `inner-${id}` : 'comment'}`);
+        // if (!gifIsOpen && form.value?.trim().length === 0) {
+        //     util.notify('Comments cannot be empty.').warning();
+        //     return;
+        // }
 
-        const cancel = document.querySelector(`[onclick="undangan.comment.cancel(this, '${id}')"]`);
-        if (cancel) {
-            cancel.disabled = true;
-        }
+        // if (!id && name && !session.isAdmin()) {
+        //     name.disabled = true;
+        // }
+
+        // if (!session.isAdmin() && presence && presence.value !== '0') {
+        //     presence.disabled = true;
+        // }
+
+        // if (form) {
+        //     form.disabled = true;
+        // }
+
+        // const cancel = document.querySelector(`[onclick="undangan.comment.cancel(this, '${id}')"]`);
+        // if (cancel) {
+        //     cancel.disabled = true;
+        // }
 
         const btn = util.disableButton(button);
-        const isPresence = presence ? presence.value === '1' : true;
+        // const isPresence = presence ? presence.value === '1' : true;
 
-        if (!session.isAdmin()) {
-            const info = storage('information');
-            info.set('name', nameValue);
+        // if (!session.isAdmin()) {
+        //     const info = storage('information');
+        //     info.set('name', nameValue);
 
-            if (!id) {
-                info.set('presence', isPresence);
+        //     if (!id) {
+        //         info.set('presence', isPresence);
+        //     }
+        // }
+
+        const getGuestUrl = `${SUPABASE_URL}/guest_list?name=eq.${encodeURIComponent(getGuestName())}&token=eq.${encodeURIComponent(getGuestUuid())}`;
+
+        const getResp = await fetch(getGuestUrl, {
+            headers: {
+            "apikey": SUPABASE_ANON_KEY,
+            "Authorization": `Bearer ${SUPABASE_ANON_KEY}`
             }
+        });
+
+        const getRes = await getResp.json();
+
+        let updateUrl;
+        if (getRes.length > 0) {
+            if (getRes[0].name !== nameValue) {
+                showUnauthorizedPopup();
+                return
+            }
+
+            const id = getRes[0].id;  // Extract the id from the first object
+            updateUrl = `${SUPABASE_URL}/guest_list?id=eq.${id}`;
+        
+            console.log(updateUrl);
+            // Now you can use updateUrl for your PATCH/PUT request
+        } else {
+            util.notify('Something went wrong. Please refresh the page').warning();
+            console.error("No data returned from get request");
+            return
         }
 
-        const response = await request(HTTP_POST, `/api/comment?lang=${lang.getLanguage()}`)
-            .token(session.getToken())
-            .body(dto.postCommentRequest(id, nameValue, isPresence, gifIsOpen ? null : form.value, gifId))
-            .send(dto.getCommentResponse);
+        // const response = await request("PATCH", updateUrl)
+        //     .token(`${SUPABASE_ANON_KEY}`)
+        //     .header("Content-Type", "application/json")
+        //     .header("apikey", `${SUPABASE_ANON_KEY}`)
+        //     .header("Authorization", `Bearer ${SUPABASE_ANON_KEY}`)
+        //     .body(dto.postCommentRequest(1, presence, totalPax));
+        //     // .send(dto.getCommentResponse);
+        
+        //     console.log(dto.postCommentRequest(1, presence, totalPax));
+
+
+        const isPresent = presence.value === "1";
+
+        const response = await fetch(updateUrl, {
+            method: "PATCH",
+            headers: {
+                "Content-Type": "application/json",
+                "apikey": SUPABASE_ANON_KEY,
+                "Authorization": `Bearer ${SUPABASE_ANON_KEY}`,
+                "Prefer": "return=representation" // optional: returns updated row
+            },
+            body: JSON.stringify({
+                attendance: isPresent,       // example: true or false, or 1/0
+                coming_pax: totalPax.value,       // example: a number
+                message: message.value, // example: a string message
+                message_created_at: Math.floor(Date.now() / 1000)
+            })
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+            // Show popup
+            showPopup();
+    
+            // Update button text
+            button.innerText = "Submitted";
+    
+            // Keep it disabled permanently
+            button.disabled = true;
+
+            await loadWishes();
+        } else {
+            // If failed, re-enable the button
+            button.disabled = false;
+            button.innerText = "Send";
+    
+            console.error("Submit failed:", data);
+        }
 
         if (name) {
             name.disabled = false;
         }
 
-        if (form) {
-            form.disabled = false;
-        }
+        // if (form) {
+        //     form.disabled = false;
+        // }
 
-        if (cancel) {
-            cancel.disabled = false;
-        }
+        // if (cancel) {
+        //     cancel.disabled = false;
+        // }
 
         if (presence) {
             presence.disabled = false;
         }
 
-        if (gifIsOpen && gifId) {
-            gifCancel.show();
-        }
+        // if (gifIsOpen && gifId) {
+        //     gifCancel.show();
+        // }
 
-        btn.restore();
+        // btn.restore();
 
-        if (!response || response.code !== HTTP_STATUS_CREATED) {
-            return;
-        }
+        // owns.set(response.data.uuid, response.data.own);
 
-        owns.set(response.data.uuid, response.data.own);
+        // if (form) {
+        //     form.value = null;
+        // }
 
-        if (form) {
-            form.value = null;
-        }
+        // if (gifIsOpen && gifId) {
+        //     gifCancel.click();
+        // }
 
-        if (gifIsOpen && gifId) {
-            gifCancel.click();
-        }
+        // if (!id) {
+        //     if (pagination.reset()) {
+        //         await show();
+        //         comments.scrollIntoView();
+        //         return;
+        //     }
 
-        if (!id) {
-            if (pagination.reset()) {
-                await show();
-                comments.scrollIntoView();
-                return;
-            }
+        //     pagination.setTotal(pagination.geTotal() + 1);
+        //     if (comments.children.length === pagination.getPer()) {
+        //         comments.lastElementChild.remove();
+        //     }
 
-            pagination.setTotal(pagination.geTotal() + 1);
-            if (comments.children.length === pagination.getPer()) {
-                comments.lastElementChild.remove();
-            }
+        //     response.data.is_parent = true;
+        //     response.data.is_admin = session.isAdmin();
+        //     comments.insertAdjacentHTML('afterbegin', await card.renderContentMany([response.data]));
+        //     comments.scrollIntoView();
+        // }
 
-            response.data.is_parent = true;
-            response.data.is_admin = session.isAdmin();
-            comments.insertAdjacentHTML('afterbegin', await card.renderContentMany([response.data]));
-            comments.scrollIntoView();
-        }
+        // if (id) {
+        //     showHide.set('hidden', showHide.get('hidden').concat([dto.commentShowMore(response.data.uuid, true)]));
+        //     showHide.set('show', showHide.get('show').concat([id]));
 
-        if (id) {
-            showHide.set('hidden', showHide.get('hidden').concat([dto.commentShowMore(response.data.uuid, true)]));
-            showHide.set('show', showHide.get('show').concat([id]));
+        //     removeInnerForm(id);
 
-            removeInnerForm(id);
+        //     response.data.is_parent = false;
+        //     response.data.is_admin = session.isAdmin();
+        //     document.getElementById(`reply-content-${id}`).insertAdjacentHTML('beforeend', await card.renderContentSingle(response.data));
 
-            response.data.is_parent = false;
-            response.data.is_admin = session.isAdmin();
-            document.getElementById(`reply-content-${id}`).insertAdjacentHTML('beforeend', await card.renderContentSingle(response.data));
+        //     const anchorTag = document.getElementById(`button-${id}`).querySelector('a');
+        //     if (anchorTag) {
+        //         if (anchorTag.getAttribute('data-show') === 'false') {
+        //             showOrHide(anchorTag);
+        //         }
 
-            const anchorTag = document.getElementById(`button-${id}`).querySelector('a');
-            if (anchorTag) {
-                if (anchorTag.getAttribute('data-show') === 'false') {
-                    showOrHide(anchorTag);
-                }
+        //         anchorTag.remove();
+        //     }
 
-                anchorTag.remove();
-            }
+        //     const uuids = [response.data.uuid];
+        //     const readMoreElement = document.createRange().createContextualFragment(card.renderReadMore(id, anchorTag ? anchorTag.getAttribute('data-uuids').split(',').concat(uuids) : uuids));
 
-            const uuids = [response.data.uuid];
-            const readMoreElement = document.createRange().createContextualFragment(card.renderReadMore(id, anchorTag ? anchorTag.getAttribute('data-uuids').split(',').concat(uuids) : uuids));
+        //     const buttonLike = like.getButtonLike(id);
+        //     buttonLike.parentNode.insertBefore(readMoreElement, buttonLike);
+        // }
 
-            const buttonLike = like.getButtonLike(id);
-            buttonLike.parentNode.insertBefore(readMoreElement, buttonLike);
-        }
+        // like.addListener(response.data.uuid);
+        // lastRender.push(response.data.uuid);
+    };
 
-        like.addListener(response.data.uuid);
-        lastRender.push(response.data.uuid);
+    const showPopup = () => {
+        const popup = document.getElementById("popup");
+        popup.classList.add("show");
+      
+        setTimeout(() => {
+          popup.classList.remove("show");
+        }, 2000);
+    };
+
+    const showUnauthorizedPopup = () => {
+        const popup = document.getElementById("unauthorized-popup");
+        popup.classList.add("show");
+      
+        setTimeout(() => {
+          popup.classList.remove("show");
+        }, 2000);
     };
 
     /**

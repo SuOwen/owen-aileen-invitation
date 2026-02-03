@@ -26,6 +26,7 @@ export const admin = (() => {
         document.getElementById('form-timezone').value = res.data.tz;
         document.getElementById('filterBadWord').checked = Boolean(res.data.is_filter);
         document.getElementById('confettiAnimation').checked = Boolean(res.data.is_confetti_animation);
+        document.getElementById('confettiAnimation').checked = false;
         document.getElementById('replyComment').checked = Boolean(res.data.can_reply);
         document.getElementById('editComment').checked = Boolean(res.data.can_edit);
         document.getElementById('deleteComment').checked = Boolean(res.data.can_delete);
