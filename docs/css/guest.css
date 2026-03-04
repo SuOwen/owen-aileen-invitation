@@ -12,12 +12,12 @@ html {
 }
 
 .font-esthetic {
-    font-family: "Bonheur Royale", sans-serif !important;
+    font-family: "Allura", cursive !important;
     color: var(--bs-heading-color);
 }
 
 .font-cormorant {
-    font-family: "Charm", sans-serif !important;
+    font-family: "Cormorant Garamond", serif !important;
     color: var(--bs-heading-color);
 }
 
@@ -31,10 +31,15 @@ html {
     color: var(--bs-heading-color);
 }
 
-
-.font-arabic {
-    font-family: 'Noto Naskh Arabic', serif !important;
+.font-eb-garamond {
+    font-family: "EB Garamond", serif !important;
+    color: var(--bs-heading-color);
 }
+
+
+/* .font-arabic {
+    font-family: 'Noto Naskh Arabic', serif !important;
+} */
 
 .img-center-crop {
     width: 13rem;
