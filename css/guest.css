@@ -178,7 +178,8 @@ svg {
     box-shadow: 0 2px 5px rgba(0,0,0,0.05);
     background: var(--bs-body-bg);    
     color: var(--bs-body-color);  
-    font-family: "Charm", cursive; 
+    /* font-family: "Charm", cursive;  */
+    font-family: "EB Garamond", serif !important;
 }
 
 #wish-list::-webkit-scrollbar {

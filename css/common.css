@@ -4,7 +4,8 @@ html {
 }
 
 body {
-    font-family: 'Charm', cursive !important;
+    /* font-family: 'Charm', cursive !important; */
+    font-family: "EB Garamond", serif !important;
     padding: 0 !important;
     width: 100% !important;
     overflow-x: hidden !important;
