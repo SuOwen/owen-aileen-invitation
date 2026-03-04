@@ -161,7 +161,7 @@ export const guest = (() => {
 
       const template = `<small class="mt-0 mb-1 mx-0 p-0">${util.escapeHtml(
         guestName?.getAttribute("data-message")
-      )}</small><p class="m-0 p-0" style="font-size: 1.25rem; font-family: 'Charm';">${util.escapeHtml(
+      )}</small><p class="m-0 p-0" style="font-size: 1.25rem; font-family: 'EB Garamond';">${util.escapeHtml(
         name
       )}</p>`;
       util.safeInnerHTML(div, template);
@@ -211,8 +211,8 @@ export const guest = (() => {
     list.forEach(wish => {
         const box = `
         <div class="wish-item">
-            <h5 class="mb-1 text-body" style="font-size: 0.9rem; font-style: italic;">${wish.name}</h5>
-            <p class="mb-0" style="font-size: 1.05rem;">${wish.message}</p>
+            <h5 class="font-eb-garamond mb-1 text-body fw-bold" style="font-size: 0.9rem; font-style: italic;">${wish.name}</h5>
+            <p class="font-cormorant mb-0" style="font-size: 1.05rem;">${wish.message}</p>
         </div>
         `;
     
@@ -521,11 +521,11 @@ export const guest = (() => {
   /**
    * @returns {void}
    */
-  const normalizeArabicFont = () => {
-    document.querySelectorAll(".font-arabic").forEach((el) => {
-      el.innerHTML = String(el.innerHTML).normalize("NFC");
-    });
-  };
+  // const normalizeArabicFont = () => {
+  //   document.querySelectorAll(".font-arabic").forEach((el) => {
+  //     el.innerHTML = String(el.innerHTML).normalize("NFC");
+  //   });
+  // };
 
   /**
    * @returns {void}
@@ -604,7 +604,7 @@ export const guest = (() => {
     countDownDate();
     showGuestName();
     modalImageClick();
-    normalizeArabicFont();
+    // normalizeArabicFont();
     buildGoogleCalendar();
 
     if (information.has("presence")) {

@@ -9,8 +9,8 @@ import { storage } from '../../common/storage.js';
 import { session } from '../../common/session.js';
 import { request, HTTP_GET, HTTP_POST, HTTP_DELETE, HTTP_PUT, HTTP_STATUS_CREATED, HTTP_PATCH } from '../../connection/request.js';
 
-const SUPABASE_URL = "https://vafatgxsnanrtibqlfkn.supabase.co/rest/v1";
-const SUPABASE_ANON_KEY = "sb_publishable_oWYxT-_RPe6U19hyqVnhLA_5Q9s2FJy";
+const SUPABASE_URL = "https://ykspufoetmkqsqjuttus.supabase.co/rest/v1";
+const SUPABASE_ANON_KEY = "sb_publishable_XcgKhH2IAjSQPhQrRLBLfQ_qiu4L_TA";
 
 export const comment = (() => {
 
@@ -599,7 +599,25 @@ export const comment = (() => {
         //     console.log(dto.postCommentRequest(1, presence, totalPax));
 
 
-        const isPresent = presence.value === "1";
+        // const isPresent = presence.value === "1";
+
+        // Map select value to string
+        let attendanceStatus = "";
+
+        switch (presence.value) {
+            case "1":
+                attendanceStatus = "Holy Matrimony";
+                break;
+            case "2":
+                attendanceStatus = "Reception";
+                break;
+            case "3":
+                attendanceStatus = "Holy Matrimony and Reception";
+                break;
+            case "4":
+                attendanceStatus = "Not Coming";
+                break;
+        }
 
         const response = await fetch(updateUrl, {
             method: "PATCH",
@@ -610,7 +628,8 @@ export const comment = (() => {
                 "Prefer": "return=representation" // optional: returns updated row
             },
             body: JSON.stringify({
-                attendance: isPresent,       // example: true or false, or 1/0
+                // attendance: isPresent,       // example: true or false, or 1/0
+                attendance: attendanceStatus,
                 coming_pax: totalPax.value,       // example: a number
                 message: message.value, // example: a string message
                 message_created_at: Math.floor(Date.now() / 1000)
