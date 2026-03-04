@@ -160,7 +160,7 @@ export const guest = (() => {
       const div = document.createElement("div");
       div.classList.add("m-2");
 
-      const template = `<small class="mt-0 mb-1 mx-0 p-0">${util.escapeHtml(
+      const template = `<small class="d-block m-0 p-0" style="line-height:1;">${util.escapeHtml(
         guestName?.getAttribute("data-message")
       )}</small><p class="m-0 p-0" style="font-size: 1.25rem; font-family: 'EB Garamond';">${util.escapeHtml(
         name
