@@ -71,9 +71,7 @@ export const guest = (() => {
   const getGuestName = () => {
     const params = new URLSearchParams(window.location.search);
     // Assuming the guest name is passed via ?to=GuestName
-    return params.get("to")
-      ? decodeURIComponent(params.get("to")).trim()
-      : "Unknown Guest";
+    return params.get("to")?.trim() || "Unknown Guest";
   };
 
   // Function to safely extract the UUID/token from the URL query parameter 'uuid'
@@ -147,12 +145,15 @@ export const guest = (() => {
      * Make sure "to=" is the last query string.
      * Ex. ulems.my.id/?id=some-uuid-here&to=name
      */
-    const raw = window.location.search.split("to=");
-    let name = null;
+    const params = new URLSearchParams(window.location.search);
+    const name = params.get("to")?.trim() || "Unknown Guest";
 
-    if (raw.length > 1 && raw[1].length >= 1) {
-      name = window.decodeURIComponent(raw[1]);
-    }
+    // const raw = window.location.search.split("to=");
+    // let name = null;
+
+    // if (raw.length > 1 && raw[1].length >= 1) {
+    //   name = window.decodeURIComponent(raw[1]);
+    // }
 
     if (name) {
       const guestName = document.getElementById("guest-name");
@@ -169,7 +170,7 @@ export const guest = (() => {
       guestName?.appendChild(div);
     }
 
-    document.getElementById("form-name").value = getGuestName();
+    // document.getElementById("form-name").value = getGuestName();
 
     const form = document.getElementById("form-name");
     if (form) {
