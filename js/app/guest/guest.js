@@ -174,7 +174,8 @@ export const guest = (() => {
 
     const form = document.getElementById("form-name");
     if (form) {
-      form.value = information.get("name") ?? name;
+      form.value = name;
+      information.set("name", name);
     }
   };
 
