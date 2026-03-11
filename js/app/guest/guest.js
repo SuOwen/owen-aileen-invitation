@@ -638,11 +638,17 @@ export const guest = (() => {
     buildGoogleCalendar();
 
     if (information.has("presence")) {
-      document.getElementById("form-presence").value = information.get(
-        "presence"
-      )
-        ? "1"
-        : "2";
+      const select = document.getElementById("form-presence");
+      const attendance = information.get("presence");
+
+      const map = {
+        "Holy Matrimony Only": "1",
+        "Reception Only": "2",
+        "Holy Matrimony And Reception": "3",
+        "Not Coming": "4",
+      };
+
+      select.value = map[attendance] ?? "";
     }
 
     if (information.get("info")) {
