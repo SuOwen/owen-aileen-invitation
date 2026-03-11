@@ -300,7 +300,7 @@ export const guest = (() => {
     }
   };
 
-  const populatePaxOptions = (maxPax) => {
+  const populatePaxOptions = (maxPax, comingPax) => {
     const selectElement = document.getElementById("form-total-pax");
     if (!selectElement) {
       return;
@@ -312,6 +312,7 @@ export const guest = (() => {
     }
 
     const validMaxPax = parseInt(maxPax, 10);
+    const validComingPax = parseInt(comingPax, 10);
 
     if (validMaxPax > 0) {
       for (let i = 1; i <= validMaxPax; i++) {
@@ -327,7 +328,30 @@ export const guest = (() => {
       option.textContent = "0";
       selectElement.appendChild(option);
     }
-    // console.log(`Dropdown populated with options 1 to ${validMaxPax || 1}.`);
+
+    // Safe selection
+    if (validComingPax > 0) {
+      const selected = Math.min(validComingPax, validMaxPax);
+      selectElement.value = selected.toString();
+    }
+  };
+
+  const populateAttendance = (attendance) => {
+    const selectElement = document.getElementById("form-presence");
+    if (!selectElement) return;
+
+    if (!attendance) {
+      selectElement.value = "0";
+      return;
+    }
+
+    const normalized = attendance.trim().toLowerCase();
+
+    const option = [...selectElement.options].find(
+      o => o.text.trim().toLowerCase() === normalized
+    );
+
+    selectElement.value = option ? option.value : "0";
   };
 
   /**
@@ -396,7 +420,12 @@ export const guest = (() => {
         personalizeInvitationView(result[0].reception);
 
         // number of guests
-        populatePaxOptions(result[0].pax);
+        populateAttendance(result[0].attendance);
+
+        // number of guests
+        populatePaxOptions(result[0].pax, result[0].coming_pax);
+
+        console.log(result[0])
 
         // load wishes
         loadWishes();

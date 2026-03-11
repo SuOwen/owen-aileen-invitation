@@ -402,10 +402,10 @@ export const comment = (() => {
             }
         }
 
-        if (presence) {
-            document.getElementById('form-presence').value = isPresent ? '1' : '2';
-            storage('information').set('presence', isPresent);
-        }
+        // if (presence) {
+        //     document.getElementById('form-presence').value = isPresent ? '1' : '2';
+        //     storage('information').set('presence', isPresent);
+        // }
 
         if (!presence || !badge) {
             return;
@@ -606,10 +606,10 @@ export const comment = (() => {
 
         switch (presence.value) {
             case "1":
-                attendanceStatus = "Holy Matrimony";
+                attendanceStatus = "Holy Matrimony Only";
                 break;
             case "2":
-                attendanceStatus = "Reception";
+                attendanceStatus = "Reception Only";
                 break;
             case "3":
                 attendanceStatus = "Holy Matrimony and Reception";
@@ -617,6 +617,16 @@ export const comment = (() => {
             case "4":
                 attendanceStatus = "Not Coming";
                 break;
+        }
+
+        const body = {
+            attendance: attendanceStatus,
+            coming_pax: totalPax.value,
+            message: message.value
+        };
+
+        if (message.value && message.value.trim() !== "") {
+            body.message_created_at = Math.floor(Date.now() / 1000);
         }
 
         const response = await fetch(updateUrl, {
@@ -627,13 +637,7 @@ export const comment = (() => {
                 "Authorization": `Bearer ${SUPABASE_ANON_KEY}`,
                 "Prefer": "return=representation" // optional: returns updated row
             },
-            body: JSON.stringify({
-                // attendance: isPresent,       // example: true or false, or 1/0
-                attendance: attendanceStatus,
-                coming_pax: totalPax.value,       // example: a number
-                message: message.value, // example: a string message
-                message_created_at: Math.floor(Date.now() / 1000)
-            })
+            body: JSON.stringify(body)
         });
 
         const data = await response.json();
