@@ -337,22 +337,67 @@ export const guest = (() => {
     }
   };
 
-  const populateAttendance = (attendance) => {
+  const populateAttendance = (attendance, mode) => {
     const selectElement = document.getElementById("form-presence");
     if (!selectElement) return;
 
-    if (!attendance) {
-      selectElement.value = "0";
-      return;
+    // clear existing options
+    selectElement.innerHTML = "";
+
+    let options = [];
+
+    if (mode === 1) {
+      options = [
+        { value: "1", text: "Coming" },
+        { value: "4", text: "Not Coming" }
+      ];
+    } else if (mode === 2) {
+      options = [
+        { value: "1", text: "Holy Matrimony Only" },
+        { value: "2", text: "Reception Only" },
+        { value: "3", text: "Holy Matrimony And Reception" },
+        { value: "4", text: "Not Coming" }
+      ];
     }
 
-    const normalized = attendance.trim().toLowerCase();
+    // add placeholder
+    const placeholder = document.createElement("option");
+    placeholder.value = "";
+    placeholder.textContent = "Attendance Confirmation";
+    placeholder.disabled = true;
+    placeholder.selected = true;
+    placeholder.hidden = true;
+    selectElement.appendChild(placeholder);
 
-    const option = [...selectElement.options].find(
-      o => o.text.trim().toLowerCase() === normalized
-    );
+    // populate options
+    options.forEach(opt => {
+      const option = document.createElement("option");
+      option.value = opt.value;
+      option.textContent = opt.text;
+      selectElement.appendChild(option);
+    });
 
-    selectElement.value = option ? option.value : "0";
+    // restore selection if attendance text matches
+    if (attendance) {
+      let normalized = attendance.trim().toLowerCase();
+
+      // convert ceremony options to Coming if mode = 1
+      if (mode === 1) {
+        if (
+          normalized === "holy matrimony only" ||
+          normalized === "reception only" ||
+          normalized === "holy matrimony and reception"
+        ) {
+          normalized = "coming";
+        }
+      }
+
+      const option = [...selectElement.options].find(
+        o => o.text.trim().toLowerCase() === normalized
+      );
+
+      if (option) selectElement.value = option.value;
+    }
   };
 
   /**
@@ -421,7 +466,7 @@ export const guest = (() => {
         personalizeInvitationView(result[0].reception);
 
         // number of guests
-        populateAttendance(result[0].attendance);
+        populateAttendance(result[0].attendance, result[0].reception);
 
         // number of guests
         populatePaxOptions(result[0].pax, result[0].coming_pax);
