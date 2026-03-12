@@ -400,6 +400,18 @@ export const guest = (() => {
     }
   };
 
+  const personalizeInvitationType = (invitation) => {
+    const receptionDiv = document.getElementById("comment");
+    // if invitation = TRUE, hide comment section
+    if (receptionDiv && (invitation === true || invitation === "true")) {
+      receptionDiv.style.display = "none";
+    } else {
+      if (receptionDiv) {
+        receptionDiv.style.display = "block";
+      }
+    }
+  };
+
   /**
    * @param {HTMLButtonElement} button
    * @returns {void}
@@ -470,6 +482,9 @@ export const guest = (() => {
 
         // number of guests
         populatePaxOptions(result[0].pax, result[0].coming_pax);
+
+        // comment section
+        personalizeInvitationType(result[0].invitation_only);
 
         console.log(result[0])
 
