@@ -504,7 +504,7 @@ export const comment = (() => {
         }
 
         const totalPax = document.getElementById('form-total-pax');
-        if (totalPax && totalPax.value === '0' && presence.value !== "Berhalangan") {
+        if (totalPax && totalPax.value === '0' && presence.value !== "4") {
             util.notify('Please select the number of pax.').warning();
             return;
         }

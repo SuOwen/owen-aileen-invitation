@@ -339,6 +339,8 @@ export const guest = (() => {
 
   const populateAttendance = (attendance, mode) => {
     const selectElement = document.getElementById("form-presence");
+    const paxSelect = document.getElementById("form-total-pax");
+    
     if (!selectElement) return;
 
     // clear existing options
@@ -397,7 +399,28 @@ export const guest = (() => {
       );
 
       if (option) selectElement.value = option.value;
+
+      // handle pax if restored value is "Not Coming"
+      if (normalized === "not coming" && paxSelect) {
+        paxSelect.value = "0";
+        paxSelect.disabled = true;
+      }
     }
+
+    // listen for changes
+    selectElement.addEventListener("change", () => {
+      if (!paxSelect) return;
+
+      const selectedText =
+        selectElement.options[selectElement.selectedIndex].text.toLowerCase();
+
+      if (selectedText === "not coming") {
+        paxSelect.value = "0";
+        paxSelect.disabled = true;
+      } else {
+        paxSelect.disabled = false;
+      }
+    });
   };
 
   const personalizeInvitationType = (invitation) => {
