@@ -498,7 +498,7 @@ export const comment = (() => {
         // }
 
         const presence = document.getElementById('form-presence');
-        if (presence && presence.value === '0') {
+        if (!presence || presence.value === '' || presence.value === '0') {
             util.notify('Please select your attendance status.').warning();
             return;
         }
